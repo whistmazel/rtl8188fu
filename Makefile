@@ -69,7 +69,7 @@ CONFIG_TXPWR_BY_RATE_EN = y
 CONFIG_TXPWR_LIMIT = y
 CONFIG_TXPWR_LIMIT_EN = n
 CONFIG_RTW_CHPLAN = 0xFF
-CONFIG_RTW_ADAPTIVITY_EN = disable
+CONFIG_RTW_ADAPTIVITY_EN = enable
 CONFIG_RTW_ADAPTIVITY_MODE = normal
 CONFIG_SIGNAL_SCALE_MAPPING = n
 CONFIG_80211W = y
@@ -103,7 +103,7 @@ endif
 CONFIG_RTW_DEBUG = y
 # default log level is _DRV_INFO_ = 4,
 # please refer to "How_to_set_driver_debug_log_level.doc" to set the available level.
-CONFIG_RTW_LOG_LEVEL = 4
+CONFIG_RTW_LOG_LEVEL = 0
 
 # enable /proc/net/rtlxxxx/ debug interfaces
 CONFIG_PROC_DEBUG = y
@@ -1162,6 +1162,7 @@ endif
 
 ifeq ($(CONFIG_80211W), y)
 EXTRA_CFLAGS += -DCONFIG_IEEE80211W
+EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
 endif
 
 ifeq ($(CONFIG_WOWLAN), y)
@@ -2250,10 +2251,10 @@ endif
 ifeq ($(CONFIG_PLATFORM_ARM_MX6), y)
 EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN -DCONFIG_WISTRON_PLATFORM
 ARCH := arm
-CROSS_COMPILE ?= /medi/liao/6ULX_4.1.15/opt-4.1.15/sysroots/x86_64-pokysdk-linux/usr/bin/arm-poky-linux-gnueabi/arm-poky-linux-gnueabi-
+#CROSS_COMPILE ?= /medi/liao/6ULX_4.1.15/opt-4.1.15/sysroots/x86_64-pokysdk-linux/usr/bin/arm-poky-linux-gnueabi/arm-poky-linux-gnueabi-
 KVER  := 4.1.15
-KSRC ?= /media/liao/6ULX_4.1.15/MYS-6ULL-256N256D-50-C-SDS/Sources/myir-imx-linux-sds
-MODULE_NAME := rtl8188fu
+#KSRC ?= /media/liao/6ULX_4.1.15/MYS-6ULL-256N256D-50-C-SDS/Sources/myir-imx-linux-sds
+#MODULE_NAME := rtl8188fu
 endif
 
 ifeq ($(CONFIG_PLATFORM_ZTE_ZX296716), y)
@@ -2432,7 +2433,7 @@ export CONFIG_RTL8188FU = m
 all: modules
 
 modules:
-	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd)  modules
+	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(KERNEL_SRC) M=$(shell pwd)  modules
 
 strip:
 	$(CROSS_COMPILE)strip $(MODULE_NAME).ko --strip-unneeded
@@ -2440,6 +2441,12 @@ strip:
 install:
 	install -p -m 644 $(MODULE_NAME).ko  $(MODDESTDIR)
 	/sbin/depmod -a ${KVER}
+
+modules_install:
+	$(MAKE) -C $(KERNEL_SRC) M=$(shell pwd) modules_install
+
+clean:
+	$(MAKE) -C $(KERNEL_SRC) M=$(shell pwd) clean
 
 uninstall:
 	rm -f $(MODDESTDIR)/$(MODULE_NAME).ko
