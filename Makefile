@@ -2241,10 +2241,10 @@ endif
 ifeq ($(CONFIG_PLATFORM_ARM_MX6), y)
 EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN -DCONFIG_WISTRON_PLATFORM
 ARCH := arm
-CROSS_COMPILE ?= /media/liao/Linux_5.10.9/opt-toolchain/sysroots/x86_64-pokysdk-linux/usr/bin/arm-poky-linux-gnueabi/arm-poky-linux-gnueabi-
+#CROSS_COMPILE ?= /media/liao/Linux_5.10.9/opt-toolchain/sysroots/x86_64-pokysdk-linux/usr/bin/arm-poky-linux-gnueabi/arm-poky-linux-gnueabi-
 KVER  := 5.10.9
-KSRC ?= /media/liao/Linux_5.10.9/myir-imx-linux
-MODULE_NAME := rtl8188fu
+#KSRC ?= /media/liao/Linux_5.10.9/myir-imx-linux
+#MODULE_NAME := rtl8188fu
 endif
 
 ifeq ($(CONFIG_PLATFORM_ZTE_ZX296716), y)
@@ -2423,7 +2423,7 @@ export CONFIG_RTL8188FU = m
 all: modules
 
 modules:
-	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd)  modules
+	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(KERNEL_SRC) M=$(shell pwd)  modules
 
 strip:
 	$(CROSS_COMPILE)strip $(MODULE_NAME).ko --strip-unneeded
@@ -2431,6 +2431,12 @@ strip:
 install:
 	install -p -m 644 $(MODULE_NAME).ko  $(MODDESTDIR)
 	/sbin/depmod -a ${KVER}
+
+modules_install:
+	$(MAKE) -C $(KERNEL_SRC) M=$(shell pwd) modules_install
+
+clean:
+	$(MAKE) -C $(KERNEL_SRC) M=$(shell pwd) clean
 
 uninstall:
 	rm -f $(MODDESTDIR)/$(MODULE_NAME).ko
