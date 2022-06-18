@@ -69,7 +69,7 @@ CONFIG_TXPWR_BY_RATE_EN = y
 CONFIG_TXPWR_LIMIT = y
 CONFIG_TXPWR_LIMIT_EN = n
 CONFIG_RTW_CHPLAN = 0xFF
-CONFIG_RTW_ADAPTIVITY_EN = disable
+CONFIG_RTW_ADAPTIVITY_EN = enable
 CONFIG_RTW_ADAPTIVITY_MODE = normal
 CONFIG_SIGNAL_SCALE_MAPPING = n
 CONFIG_80211W = y
@@ -101,7 +101,7 @@ endif
 CONFIG_RTW_DEBUG = y
 # default log level is _DRV_INFO_ = 4,
 # please refer to "How_to_set_driver_debug_log_level.doc" to set the available level.
-CONFIG_RTW_LOG_LEVEL = 4
+CONFIG_RTW_LOG_LEVEL = 0
 
 # enable /proc/net/rtlxxxx/ debug interfaces
 CONFIG_PROC_DEBUG = y
@@ -130,7 +130,7 @@ CONFIG_RTW_SDIO_PM_KEEP_POWER = y
 ###################### MP HW TX MODE FOR VHT #######################
 CONFIG_MP_VHT_HW_TX_MODE = n
 ###################### Platform Related #######################
-CONFIG_PLATFORM_I386_PC = y
+CONFIG_PLATFORM_I386_PC = n
 CONFIG_PLATFORM_ANDROID_X86 = n
 CONFIG_PLATFORM_ANDROID_INTEL_X86 = n
 CONFIG_PLATFORM_JB_X86 = n
@@ -192,6 +192,7 @@ CONFIG_PLATFORM_NV_TK1_UBUNTU = n
 CONFIG_PLATFORM_RTL8197D = n
 CONFIG_PLATFORM_AML_S905 = n
 CONFIG_PLATFORM_ZTE_ZX296716 = n
+CONFIG_PLATFORM_ARM_MX6 = y
 ########### CUSTOMER ################################
 CONFIG_CUSTOMER_HUAWEI_GENERAL = n
 
@@ -1159,6 +1160,7 @@ endif
 
 ifeq ($(CONFIG_80211W), y)
 EXTRA_CFLAGS += -DCONFIG_IEEE80211W
+EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
 endif
 
 ifeq ($(CONFIG_WOWLAN), y)
@@ -2234,6 +2236,15 @@ USER_MODULE_NAME := 8822bs
 endif
 endif
 
+endif
+
+ifeq ($(CONFIG_PLATFORM_ARM_MX6), y)
+EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN -DCONFIG_WISTRON_PLATFORM
+ARCH := arm
+CROSS_COMPILE ?= /media/liao/Linux_5.10.9/opt-toolchain/sysroots/x86_64-pokysdk-linux/usr/bin/arm-poky-linux-gnueabi/arm-poky-linux-gnueabi-
+KVER  := 5.10.9
+KSRC ?= /media/liao/Linux_5.10.9/myir-imx-linux
+MODULE_NAME := rtl8188fu
 endif
 
 ifeq ($(CONFIG_PLATFORM_ZTE_ZX296716), y)
